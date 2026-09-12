@@ -1,0 +1,1405 @@
+# ============================================================
+# COMPLETE BROWSER-BASED 3D BRAIN VIEWER
+# Three.js + GLB + Canonical Ontology Metadata
+# ============================================================
+
+from pathlib import Path
+import shutil
+import zipfile
+
+BASE = Path("/kaggle/working/brain_viewer_data")
+BASE.mkdir(exist_ok=True)
+
+# ------------------------------------------------------------
+# Ensure viewer assets exist
+# ------------------------------------------------------------
+
+shutil.copy2(
+    "/kaggle/working/MNI305/IXI351_UNEST_CanonicalBrain_CLEAN.glb",
+    BASE / "brain.glb"
+)
+
+shutil.copy2(
+    "/kaggle/working/MNI305/brain_manifest.json",
+    BASE / "manifest.json"
+)
+
+# ------------------------------------------------------------
+# HTML
+# ------------------------------------------------------------
+
+html = r'''<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Canonical 3D Brain Viewer</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: #101216;
+    color: #eeeeee;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+#viewer {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
+
+canvas {
+    display: block;
+}
+
+#sidebar {
+    width: 360px;
+    height: 100%;
+    background: #181b21;
+    border-left: 1px solid #30343c;
+    display: flex;
+    flex-direction: column;
+}
+
+#header {
+    padding: 18px;
+    border-bottom: 1px solid #30343c;
+}
+
+#header h1 {
+    margin: 0 0 5px 0;
+    font-size: 20px;
+}
+
+#header p {
+    margin: 0;
+    color: #999;
+    font-size: 12px;
+}
+
+#search {
+    margin: 12px;
+    padding: 10px 12px;
+    border-radius: 7px;
+    border: 1px solid #3a3e47;
+    background: #101216;
+    color: white;
+    outline: none;
+    width: calc(100% - 24px);
+}
+
+#search:focus {
+    border-color: #777;
+}
+
+#structures {
+    flex: 1;
+    overflow-y: auto;
+    padding: 5px 10px;
+}
+
+.structure {
+    padding: 9px 10px;
+    margin-bottom: 3px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.structure:hover {
+    background: #292d35;
+}
+
+.structure.selected {
+    background: #353b46;
+}
+
+.structure .name {
+    font-weight: 600;
+}
+
+.structure .side {
+    color: #999;
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+#info {
+    border-top: 1px solid #30343c;
+    padding: 15px;
+    min-height: 205px;
+}
+
+#info h2 {
+    font-size: 17px;
+    margin: 0 0 12px 0;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 6px 0;
+    font-size: 12px;
+}
+
+.info-row span:first-child {
+    color: #888;
+}
+
+.info-row span:last-child {
+    text-align: right;
+}
+
+#controls {
+    padding: 12px;
+    border-top: 1px solid #30343c;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+}
+
+button {
+    border: 1px solid #3c414b;
+    background: #252930;
+    color: white;
+    border-radius: 6px;
+    padding: 9px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #343943;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+#loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #101216;
+    z-index: 10;
+    font-size: 18px;
+}
+
+#status {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    background: rgba(0,0,0,.65);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #bbb;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+    <div id="viewer">
+
+        <div id="loading">
+            Loading 3D brain...
+        </div>
+
+        <div id="status">
+            Drag: rotate &nbsp; | &nbsp;
+            Wheel: zoom &nbsp; | &nbsp;
+            Click: select
+        </div>
+
+    </div>
+
+    <aside id="sidebar">
+
+        <div id="header">
+            <h1>3D Brain Atlas</h1>
+            <p>Canonical Anatomical Ontology</p>
+        </div>
+
+        <input
+            id="search"
+            type="text"
+            placeholder="Search structure..."
+        >
+
+        <div id="structures"></div>
+
+        <div id="info">
+
+            <h2 id="selected-name">
+                Select a structure
+            </h2>
+
+            <div class="info-row">
+                <span>Canonical ID</span>
+                <span id="selected-canonical">—</span>
+            </div>
+
+            <div class="info-row">
+                <span>Laterality</span>
+                <span id="selected-laterality">—</span>
+            </div>
+
+            <div class="info-row">
+                <span>Source</span>
+                <span id="selected-source">—</span>
+            </div>
+
+            <div class="info-row">
+                <span>Source Label</span>
+                <span id="selected-source-id">—</span>
+            </div>
+
+            <div class="info-row">
+                <span>Category</span>
+                <span id="selected-category">—</span>
+            </div>
+
+        </div>
+
+        <div id="controls">
+
+            <button id="isolate" disabled>
+                Isolate
+            </button>
+
+            <button id="hide" disabled>
+                Hide
+            </button>
+
+            <button id="show-all">
+                Show All
+            </button>
+
+            <button id="reset">
+                Reset View
+            </button>
+
+        </div>
+
+    </aside>
+
+</div>
+
+
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+}
+</script>
+
+
+<script type="module">
+
+import * as THREE from "three";
+
+import {
+    OrbitControls
+} from "three/addons/controls/OrbitControls.js";
+
+import {
+    GLTFLoader
+} from "three/addons/loaders/GLTFLoader.js";
+
+
+// ============================================================
+// GLOBALS
+// ============================================================
+
+let scene;
+let camera;
+let renderer;
+let controls;
+
+let brain;
+
+let selectedObject = null;
+let selectedMetadata = null;
+
+let originalMaterials = new Map();
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+let structureObjects = [];
+
+let metadataByObject = new Map();
+
+
+// ============================================================
+// DOM
+// ============================================================
+
+const viewer = document.getElementById("viewer");
+
+const loading =
+    document.getElementById("loading");
+
+const structures =
+    document.getElementById("structures");
+
+const search =
+    document.getElementById("search");
+
+const selectedName =
+    document.getElementById("selected-name");
+
+const selectedCanonical =
+    document.getElementById("selected-canonical");
+
+const selectedLaterality =
+    document.getElementById("selected-laterality");
+
+const selectedSource =
+    document.getElementById("selected-source");
+
+const selectedSourceId =
+    document.getElementById("selected-source-id");
+
+const selectedCategory =
+    document.getElementById("selected-category");
+
+const isolateButton =
+    document.getElementById("isolate");
+
+const hideButton =
+    document.getElementById("hide");
+
+
+// ============================================================
+// SCENE
+// ============================================================
+
+scene = new THREE.Scene();
+
+scene.background =
+    new THREE.Color(0x101216);
+
+
+// ============================================================
+// CAMERA
+// ============================================================
+
+camera = new THREE.PerspectiveCamera(
+    45,
+    viewer.clientWidth / viewer.clientHeight,
+    0.1,
+    5000
+);
+
+camera.position.set(
+    0,
+    0,
+    350
+);
+
+
+// ============================================================
+// RENDERER
+// ============================================================
+
+renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    logarithmicDepthBuffer: true
+});
+
+renderer.setPixelRatio(
+    Math.min(window.devicePixelRatio, 2)
+);
+
+renderer.setSize(
+    viewer.clientWidth,
+    viewer.clientHeight
+);
+
+renderer.outputColorSpace =
+    THREE.SRGBColorSpace;
+
+viewer.appendChild(renderer.domElement);
+
+
+// ============================================================
+// LIGHTING
+// ============================================================
+
+const ambient =
+    new THREE.HemisphereLight(
+        0xffffff,
+        0x222222,
+        2.5
+    );
+
+scene.add(ambient);
+
+
+const keyLight =
+    new THREE.DirectionalLight(
+        0xffffff,
+        2.5
+    );
+
+keyLight.position.set(
+    200,
+    300,
+    400
+);
+
+scene.add(keyLight);
+
+
+const fillLight =
+    new THREE.DirectionalLight(
+        0xffffff,
+        1.2
+    );
+
+fillLight.position.set(
+    -300,
+    -100,
+    200
+);
+
+scene.add(fillLight);
+
+
+// ============================================================
+// CONTROLS
+// ============================================================
+
+controls = new OrbitControls(
+    camera,
+    renderer.domElement
+);
+
+controls.enableDamping = true;
+
+controls.dampingFactor = 0.06;
+
+controls.screenSpacePanning = true;
+
+controls.minDistance = 20;
+
+controls.maxDistance = 2000;
+
+
+// ============================================================
+// LOAD MANIFEST
+// ============================================================
+
+const manifest =
+    await fetch("manifest.json")
+        .then(r => r.json());
+
+
+// ============================================================
+// METADATA INDEX
+// ============================================================
+
+for (const structure of manifest.structures) {
+
+    metadataByObject.set(
+        structure.object_name,
+        structure
+    );
+}
+
+
+// ============================================================
+// LOAD GLB
+// ============================================================
+
+const loader = new GLTFLoader();
+
+loader.load(
+    "brain.glb",
+
+    gltf => {
+
+        brain = gltf.scene;
+
+        scene.add(brain);
+
+        // ----------------------------------------------------
+        // Process every mesh
+        // ----------------------------------------------------
+
+        brain.traverse(object => {
+
+            if (!object.isMesh)
+                return;
+
+            structureObjects.push(object);
+
+            // Save original material
+            originalMaterials.set(
+                object,
+                object.material
+            );
+
+            // ------------------------------------------------
+            // Find metadata by object name
+            // ------------------------------------------------
+
+            let metadata =
+                metadataByObject.get(
+                    object.name
+                );
+
+            // GLTF may create names with suffixes.
+            // Try UUID-independent prefix matching.
+            if (!metadata) {
+
+                for (
+                    const [
+                        name,
+                        value
+                    ] of metadataByObject
+                ) {
+
+                    if (
+                        object.name === name ||
+                        object.name.startsWith(name)
+                    ) {
+
+                        metadata = value;
+                        break;
+                    }
+                }
+            }
+
+            if (metadata) {
+
+                object.userData.metadata =
+                    metadata;
+
+                // Give each anatomical structure
+                // a stable base appearance.
+                const color =
+                    colorForStructure(
+                        metadata.canonical_id,
+                        metadata.laterality
+                    );
+
+                object.material =
+                    object.material.clone();
+
+                object.material.color =
+                    color;
+
+                object.material.roughness =
+                    0.75;
+
+                object.material.metalness =
+                    0.0;
+
+            }
+
+        });
+
+
+        // ----------------------------------------------------
+        // Fit camera
+        // ----------------------------------------------------
+
+        fitCameraToObject(
+            brain,
+            1.25
+        );
+
+
+        // ----------------------------------------------------
+        // Build structure list
+        // ----------------------------------------------------
+
+        buildStructureList();
+
+
+        loading.style.display =
+            "none";
+
+        updateStatus(
+            `${structureObjects.length} anatomical objects loaded`
+        );
+
+    },
+
+    progress => {
+
+        if (progress.total) {
+
+            const percent =
+                Math.round(
+                    progress.loaded /
+                    progress.total *
+                    100
+                );
+
+            loading.textContent =
+                `Loading 3D brain... ${percent}%`;
+        }
+
+    },
+
+    error => {
+
+        console.error(error);
+
+        loading.textContent =
+            "Failed to load brain.glb";
+
+    }
+);
+
+
+// ============================================================
+// COLOR
+// ============================================================
+
+function colorForStructure(
+    canonicalId,
+    laterality
+) {
+
+    let hash = 0;
+
+    const text =
+        canonicalId +
+        laterality;
+
+    for (let i = 0; i < text.length; i++) {
+
+        hash =
+            text.charCodeAt(i) +
+            ((hash << 5) - hash);
+    }
+
+    const hue =
+        Math.abs(hash) % 360;
+
+    const color =
+        new THREE.Color();
+
+    color.setHSL(
+        hue / 360,
+        0.42,
+        0.72
+    );
+
+    return color;
+}
+
+
+// ============================================================
+// BUILD SIDEBAR LIST
+// ============================================================
+
+function buildStructureList(
+    filter = ""
+) {
+
+    structures.innerHTML = "";
+
+    const filtered =
+        structureObjects
+            .map(o => ({
+                object: o,
+                metadata:
+                    o.userData.metadata
+            }))
+            .filter(item => {
+
+                if (!item.metadata)
+                    return false;
+
+                const text =
+                    (
+                        item.metadata.preferred_name +
+                        " " +
+                        item.metadata.canonical_id +
+                        " " +
+                        item.metadata.laterality
+                    ).toLowerCase();
+
+                return text.includes(
+                    filter.toLowerCase()
+                );
+            })
+            .sort((a, b) =>
+                (
+                    a.metadata.preferred_name +
+                    a.metadata.laterality
+                ).localeCompare(
+                    b.metadata.preferred_name +
+                    b.metadata.laterality
+                )
+            );
+
+    for (const item of filtered) {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "structure";
+
+        div.dataset.objectName =
+            item.object.name;
+
+        div.innerHTML = `
+            <div class="name">
+                ${escapeHtml(
+                    item.metadata.preferred_name
+                )}
+            </div>
+
+            <div class="side">
+                ${escapeHtml(
+                    item.metadata.laterality
+                )}
+                &nbsp; · &nbsp;
+                ${escapeHtml(
+                    item.metadata.canonical_id
+                )}
+            </div>
+        `;
+
+        div.onclick = () => {
+
+            selectObject(
+                item.object
+            );
+
+            focusObject(
+                item.object
+            );
+
+        };
+
+        structures.appendChild(div);
+    }
+}
+
+
+// ============================================================
+// SEARCH
+// ============================================================
+
+search.addEventListener(
+    "input",
+    () => {
+
+        buildStructureList(
+            search.value
+        );
+
+    }
+);
+
+
+// ============================================================
+// SELECT OBJECT
+// ============================================================
+
+function selectObject(object) {
+
+    if (selectedObject) {
+
+        restoreObject(
+            selectedObject
+        );
+    }
+
+    selectedObject = object;
+
+    selectedMetadata =
+        object.userData.metadata;
+
+    if (!selectedMetadata)
+        return;
+
+    // --------------------------------------------------------
+    // Highlight
+    // --------------------------------------------------------
+
+    object.material =
+        object.material.clone();
+
+    object.material.color =
+        new THREE.Color(
+            0xffff00
+        );
+
+    object.material.emissive =
+        new THREE.Color(
+            0x333300
+        );
+
+    object.material.emissiveIntensity =
+        0.8;
+
+    // --------------------------------------------------------
+    // UI
+    // --------------------------------------------------------
+
+    selectedName.textContent =
+        displayName(
+            selectedMetadata
+        );
+
+    selectedCanonical.textContent =
+        selectedMetadata.canonical_id || "—";
+
+    selectedLaterality.textContent =
+        selectedMetadata.laterality || "—";
+
+    selectedSource.textContent =
+        selectedMetadata.source || "—";
+
+    selectedSourceId.textContent =
+        selectedMetadata.source_id ?? "—";
+
+    selectedCategory.textContent =
+        selectedMetadata.category || "—";
+
+    isolateButton.disabled =
+        false;
+
+    hideButton.disabled =
+        false;
+
+    // --------------------------------------------------------
+    // Sidebar selection
+    // --------------------------------------------------------
+
+    document
+        .querySelectorAll(".structure")
+        .forEach(el => {
+
+            el.classList.toggle(
+                "selected",
+                el.dataset.objectName ===
+                object.name
+            );
+
+        });
+}
+
+
+// ============================================================
+// RESTORE OBJECT
+// ============================================================
+
+function restoreObject(object) {
+
+    const original =
+        originalMaterials.get(
+            object
+        );
+
+    if (original) {
+
+        object.material =
+            original.clone();
+
+        const metadata =
+            object.userData.metadata;
+
+        if (metadata) {
+
+            object.material.color =
+                colorForStructure(
+                    metadata.canonical_id,
+                    metadata.laterality
+                );
+
+            object.material.roughness =
+                0.75;
+
+            object.material.metalness =
+                0.0;
+        }
+    }
+}
+
+
+// ============================================================
+// ISOLATE
+// ============================================================
+
+isolateButton.onclick = () => {
+
+    if (!selectedObject)
+        return;
+
+    structureObjects.forEach(object => {
+
+        object.visible =
+            object === selectedObject;
+
+    });
+
+    updateStatus(
+        "Showing selected structure only"
+    );
+};
+
+
+// ============================================================
+// HIDE
+// ============================================================
+
+hideButton.onclick = () => {
+
+    if (!selectedObject)
+        return;
+
+    selectedObject.visible =
+        false;
+
+    updateStatus(
+        "Selected structure hidden"
+    );
+};
+
+
+// ============================================================
+// SHOW ALL
+// ============================================================
+
+document.getElementById(
+    "show-all"
+).onclick = () => {
+
+    structureObjects.forEach(
+        object => {
+            object.visible = true;
+        }
+    );
+
+    updateStatus(
+        "All structures visible"
+    );
+};
+
+
+// ============================================================
+// RESET VIEW
+// ============================================================
+
+document.getElementById(
+    "reset"
+).onclick = () => {
+
+    structureObjects.forEach(
+        object => {
+            object.visible = true;
+        }
+    );
+
+    if (selectedObject) {
+
+        restoreObject(
+            selectedObject
+        );
+
+    }
+
+    selectedObject = null;
+    selectedMetadata = null;
+
+    selectedName.textContent =
+        "Select a structure";
+
+    selectedCanonical.textContent =
+        "—";
+
+    selectedLaterality.textContent =
+        "—";
+
+    selectedSource.textContent =
+        "—";
+
+    selectedSourceId.textContent =
+        "—";
+
+    selectedCategory.textContent =
+        "—";
+
+    isolateButton.disabled =
+        true;
+
+    hideButton.disabled =
+        true;
+
+    document
+        .querySelectorAll(".structure")
+        .forEach(el =>
+            el.classList.remove(
+                "selected"
+            )
+        );
+
+    fitCameraToObject(
+        brain,
+        1.25
+    );
+
+    updateStatus(
+        "View reset"
+    );
+};
+
+
+// ============================================================
+// MOUSE PICKING
+// ============================================================
+
+renderer.domElement.addEventListener(
+    "click",
+    event => {
+
+        const rect =
+            renderer.domElement
+                .getBoundingClientRect();
+
+        mouse.x =
+            (
+                (event.clientX - rect.left)
+                / rect.width
+            ) * 2 - 1;
+
+        mouse.y =
+            -(
+                (event.clientY - rect.top)
+                / rect.height
+            ) * 2 + 1;
+
+        raycaster.setFromCamera(
+            mouse,
+            camera
+        );
+
+        const hits =
+            raycaster.intersectObjects(
+                structureObjects,
+                false
+            );
+
+        if (hits.length > 0) {
+
+            selectObject(
+                hits[0].object
+            );
+
+        }
+    }
+);
+
+
+// ============================================================
+// FOCUS OBJECT
+// ============================================================
+
+function focusObject(object) {
+
+    const box =
+        new THREE.Box3()
+            .setFromObject(object);
+
+    const center =
+        box.getCenter(
+            new THREE.Vector3()
+        );
+
+    controls.target.copy(
+        center
+    );
+
+    const size =
+        box.getSize(
+            new THREE.Vector3()
+        );
+
+    const maxSize =
+        Math.max(
+            size.x,
+            size.y,
+            size.z
+        );
+
+    const distance =
+        maxSize /
+        Math.tan(
+            THREE.MathUtils.degToRad(
+                camera.fov * 0.5
+            )
+        );
+
+    camera.position.copy(
+        center
+            .clone()
+            .add(
+                new THREE.Vector3(
+                    0,
+                    0,
+                    distance * 1.8
+                )
+            )
+    );
+
+    camera.lookAt(center);
+
+    controls.update();
+}
+
+
+// ============================================================
+// FIT CAMERA
+// ============================================================
+
+function fitCameraToObject(
+    object,
+    offset = 1.25
+) {
+
+    if (!object)
+        return;
+
+    const box =
+        new THREE.Box3()
+            .setFromObject(object);
+
+    const size =
+        box.getSize(
+            new THREE.Vector3()
+        );
+
+    const center =
+        box.getCenter(
+            new THREE.Vector3()
+        );
+
+    const maxSize =
+        Math.max(
+            size.x,
+            size.y,
+            size.z
+        );
+
+    const fitHeightDistance =
+        maxSize /
+        (
+            2 *
+            Math.tan(
+                THREE.MathUtils.degToRad(
+                    camera.fov / 2
+                )
+            )
+        );
+
+    const fitWidthDistance =
+        fitHeightDistance /
+        camera.aspect;
+
+    const distance =
+        offset *
+        Math.max(
+            fitHeightDistance,
+            fitWidthDistance
+        );
+
+    camera.position.set(
+        center.x,
+        center.y,
+        center.z + distance
+    );
+
+    controls.target.copy(
+        center
+    );
+
+    controls.update();
+}
+
+
+// ============================================================
+// WINDOW RESIZE
+// ============================================================
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        camera.aspect =
+            viewer.clientWidth /
+            viewer.clientHeight;
+
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(
+            viewer.clientWidth,
+            viewer.clientHeight
+        );
+
+    }
+);
+
+
+// ============================================================
+// STATUS
+// ============================================================
+
+function updateStatus(text) {
+
+    document.getElementById(
+        "status"
+    ).textContent = text;
+}
+
+
+// ============================================================
+// DISPLAY NAME
+// ============================================================
+
+function displayName(metadata) {
+
+    let name =
+        metadata.preferred_name ||
+        metadata.source_name ||
+        metadata.canonical_id;
+
+    if (
+        metadata.laterality &&
+        metadata.laterality !== "NONE"
+    ) {
+
+        name +=
+            " — " +
+            metadata.laterality;
+
+    }
+
+    return name;
+}
+
+
+// ============================================================
+// HTML ESCAPE
+// ============================================================
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+// ============================================================
+// ANIMATION
+// ============================================================
+
+function animate() {
+
+    requestAnimationFrame(
+        animate
+    );
+
+    controls.update();
+
+    renderer.render(
+        scene,
+        camera
+    );
+}
+
+animate();
+
+</script>
+
+</body>
+</html>
+'''
+
+# ------------------------------------------------------------
+# Write viewer
+# ------------------------------------------------------------
+
+html_path = BASE / "index.html"
+
+html_path.write_text(
+    html,
+    encoding="utf-8"
+)
+
+# ------------------------------------------------------------
+# Create ZIP package
+# ------------------------------------------------------------
+
+zip_path = Path(
+    "/kaggle/working/"
+    "canonical_3d_brain_viewer.zip"
+)
+
+with zipfile.ZipFile(
+    zip_path,
+    "w",
+    zipfile.ZIP_DEFLATED
+) as z:
+
+    for file in BASE.iterdir():
+
+        if file.is_file():
+
+            z.write(
+                file,
+                arcname=file.name
+            )
+
+print("=" * 60)
+print("3D BRAIN VIEWER READY")
+print("=" * 60)
+
+print("Viewer:")
+print(html_path)
+
+print("\nPackage:")
+print(zip_path)
+
+print("\nFiles:")
+for file in BASE.iterdir():
+    if file.is_file():
+        print(" -", file.name)
