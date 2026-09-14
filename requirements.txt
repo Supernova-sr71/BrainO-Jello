@@ -1,0 +1,5 @@
+monai[all]
+numpy<2.0.0
+antspyx
+trimesh
+fast_simplification
