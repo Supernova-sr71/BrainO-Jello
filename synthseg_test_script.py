@@ -83,8 +83,12 @@ ontology_lookup = (
 #     os.path.join(IXI_DIR, "**", "*.nii.gz"),
 #     recursive=True
 # )
-files=['/Users/abhinavkrishna/Downloads/IXI314-IOP-0889-T1.nii.gz']
-files = sorted(set(files))
+raw_paths = (
+    glob.glob(os.path.join(IXI_DIR, "**", "*.nii"), recursive=True) +
+    glob.glob(os.path.join(IXI_DIR, "**", "*.nii.gz"), recursive=True)
+)
+
+files = sorted([f for f in raw_paths if os.path.isfile(f)])[:50]
 
 print("Found:", len(files), "MRI files")
 
@@ -163,34 +167,34 @@ def process_subject(t1_path):
     # 2. RUN SYNTHSEG
     # --------------------------------------------------------
 
-    synthseg_output = os.path.join(
-        synthseg_dir,
-        f"{subject_id}_synthseg.nii"
-    )
     synthseg_dir = os.path.join(subject_dir, "SynthSeg")
     os.makedirs(synthseg_dir, exist_ok=True)
 
-    synthseg_path = os.path.join(
+    synthseg_output = os.path.join(
         synthseg_dir,
         f"{subject_id}_RAS_synthseg.nii.gz"
     )
 
-    cmd = [
-        "python",
-        synthseg_script,
-        "--i", ras_path,
-        "--o", synthseg_path,
-        "--cpu"
-    ]
+    if os.path.exists(synthseg_output):
+        print("Using existing SynthSeg:", synthseg_output)
+    else:
+        cmd = [
+            "python",
+            synthseg_script,
+            "--i", ras_path,
+            "--o", synthseg_output,
+            "--cpu"
+        ]
 
-    print("Running SynthSeg...")
-    subprocess.run(cmd, check=True)
+        print("Running SynthSeg...")
+        subprocess.run(cmd, check=True)
 
-    if not os.path.exists(synthseg_path):
-        raise RuntimeError(f"SynthSeg output not found: {synthseg_path}")
+    if not os.path.exists(synthseg_output):
+        raise FileNotFoundError(
+            f"SynthSeg output not found: {synthseg_output}"
+        )
 
-    print("SynthSeg output:", synthseg_path)
-
+    print("SynthSeg output:", synthseg_output)
 
 
 
