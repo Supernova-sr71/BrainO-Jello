@@ -1,0 +1,82 @@
+canonical_id,preferred_name,parent_id,category,laterality_allowed,description,category_auto,ontology_level
+BRN-3RD-VENTRICLE,3rd-Ventricle,BRN-VEN,anatomical_structure,False,Canonical concept derived from UNesT source term: 3rd-Ventricle,ventricle,1
+BRN-4TH-VENTRICLE,4th-Ventricle,BRN-VEN,anatomical_structure,False,Canonical concept derived from UNesT source term: 4th-Ventricle,ventricle,1
+BRN-ACC,Accumbens-Area,BRN-DGM,anatomical_structure,True,Canonical concept derived from UNesT source term: Accumbens-Area,deep_gray_matter,1
+BRN-AMY,Amygdala,BRN-DGM,deep_gray_matter,True,Canonical concept derived from UNesT source term: Amygdala,deep_gray_matter,1
+BRN-BST,Brain-Stem,BRN-BST-GRP,brainstem,False,Canonical concept derived from UNesT source term: Brain-Stem,brainstem,1
+BRN-CAU,Caudate,BRN-DGM,deep_gray_matter,True,Canonical concept derived from UNesT source term: Caudate,deep_gray_matter,1
+BRN-CB-EXT,Cerebellum-Exterior,BRN-CBL,anatomical_structure,True,Canonical concept derived from UNesT source term: Cerebellum-Exterior,cerebellum,1
+BRN-CB-WM,Cerebellum-White-Matter,BRN-CBL,anatomical_structure,True,Canonical concept derived from UNesT source term: Cerebellum-White-Matter,cerebellum,1
+BRN-CER-WM,Cerebral-White-Matter,BRN-WM,anatomical_structure,True,Canonical concept derived from UNesT source term: Cerebral-White-Matter,white_matter,1
+BRN-HIP,Hippocampus,BRN-LIM,deep_gray_matter,True,Canonical concept derived from UNesT source term: Hippocampus,deep_gray_matter,1
+BRN-INF-LAT-V,Inf-Lat-Vent,BRN-VEN,anatomical_structure,True,Canonical concept derived from UNesT source term: Inf-Lat-Vent,other,1
+BRN-LAT-V,Lateral-Ventricle,BRN-VEN,anatomical_structure,True,Canonical concept derived from UNesT source term: Lateral-Ventricle,ventricle,1
+BRN-PAL,Pallidum,BRN-DGM,deep_gray_matter,True,Canonical concept derived from UNesT source term: Pallidum,deep_gray_matter,1
+BRN-PUT,Putamen,BRN-DGM,deep_gray_matter,True,Canonical concept derived from UNesT source term: Putamen,deep_gray_matter,1
+BRN-THA,Thalamus-Proper,BRN-DGM,deep_gray_matter,True,Canonical concept derived from UNesT source term: Thalamus-Proper,deep_gray_matter,1
+BRN-VDC,Ventral-DC,BRN-DGM,anatomical_structure,True,Canonical concept derived from UNesT source term: Ventral-DC,deep_gray_matter,1
+BRN-CEREBELLAR-VERMAL-LOBULES-I-V,Cerebellar-Vermal-Lobules-I-V,BRN-CBL,anatomical_structure,False,Canonical concept derived from UNesT source term: Cerebellar-Vermal-Lobules-I-V,cerebellum,1
+BRN-CEREBELLAR-VERMAL-LOBULES-VI-VII,Cerebellar-Vermal-Lobules-VI-VII,BRN-CBL,anatomical_structure,False,Canonical concept derived from UNesT source term: Cerebellar-Vermal-Lobules-VI-VII,cerebellum,1
+BRN-CEREBELLAR-VERMAL-LOBULES-VIII-X,Cerebellar-Vermal-Lobules-VIII-X,BRN-CBL,anatomical_structure,False,Canonical concept derived from UNesT source term: Cerebellar-Vermal-Lobules-VIII-X,cerebellum,1
+BRN-BASAL-FOREBRAIN,Basal-Forebrain,BRN-DGM,anatomical_structure,True,Canonical concept derived from UNesT source term: Basal-Forebrain,deep_gray_matter,1
+BRN-ANTERIOR-CINGULATE-GYRUS,ACgG--anterior-cingulate-gyrus,BRN-LIM,anatomical_structure,True,Canonical concept derived from UNesT source term: ACgG--anterior-cingulate-gyrus,cortical_structure,4
+BRN-ANTERIOR-INSULA,AIns--anterior-insula,BRN-INS,anatomical_structure,True,Canonical concept derived from UNesT source term: AIns--anterior-insula,cortical_structure,4
+BRN-ANTERIOR-ORBITAL-GYRUS,AOrG--anterior-orbital-gyrus,BRN-FRO,anatomical_structure,True,Canonical concept derived from UNesT source term: AOrG--anterior-orbital-gyrus,cortical_structure,4
+BRN-ANGULAR-GYRUS,AnG---angular-gyrus,BRN-PAR,anatomical_structure,True,Canonical concept derived from UNesT source term: AnG---angular-gyrus,cortical_structure,4
+BRN-CALCARINE-CORTEX,Calc--calcarine-cortex,BRN-OCC,anatomical_structure,True,Canonical concept derived from UNesT source term: Calc--calcarine-cortex,cortical_structure,4
+BRN-CENTRAL-OPERCULUM,CO----central-operculum,BRN-CER-COR,anatomical_structure,True,Canonical concept derived from UNesT source term: CO----central-operculum,cortical_structure,3
+BRN-CUNEUS,Cun---cuneus,BRN-CER-COR,anatomical_structure,True,Canonical concept derived from UNesT source term: Cun---cuneus,other,1
+BRN-ENTORHINAL-AREA,Ent---entorhinal-area,BRN-LIM,anatomical_structure,True,Canonical concept derived from UNesT source term: Ent---entorhinal-area,other,1
+BRN-FRONTAL-OPERCULUM,FO----frontal-operculum,BRN-FRO,anatomical_structure,True,Canonical concept derived from UNesT source term: FO----frontal-operculum,cortical_structure,4
+BRN-FRONTAL-POLE,FRP---frontal-pole,BRN-FRO,anatomical_structure,True,Canonical concept derived from UNesT source term: FRP---frontal-pole,cortical_structure,4
+BRN-FUSIFORM-GYRUS,FuG---fusiform-gyrus,BRN-TEM,anatomical_structure,True,Canonical concept derived from UNesT source term: FuG---fusiform-gyrus,cortical_structure,4
+BRN-GYRUS-RECTUS,GRe---gyrus-rectus,BRN-FRO,anatomical_structure,True,Canonical concept derived from UNesT source term: GRe---gyrus-rectus,cortical_structure,4
+BRN-INFERIOR-OCCIPITAL-GYRUS,IOG---inferior-occipital-gyrus,BRN-OCC,anatomical_structure,True,Canonical concept derived from UNesT source term: IOG---inferior-occipital-gyrus,cortical_structure,4
+BRN-INFERIOR-TEMPORAL-GYRUS,ITG---inferior-temporal-gyrus,BRN-TEM,anatomical_structure,True,Canonical concept derived from UNesT source term: ITG---inferior-temporal-gyrus,cortical_structure,4
+BRN-LINGUAL-GYRUS,LiG---lingual-gyrus,BRN-OCC,anatomical_structure,True,Canonical concept derived from UNesT source term: LiG---lingual-gyrus,cortical_structure,4
+BRN-LATERAL-ORBITAL-GYRUS,LOrG--lateral-orbital-gyrus,BRN-FRO,anatomical_structure,True,Canonical concept derived from UNesT source term: LOrG--lateral-orbital-gyrus,cortical_structure,4
+BRN-MIDDLE-CINGULATE-GYRUS,MCgG--middle-cingulate-gyrus,BRN-LIM,anatomical_structure,True,Canonical concept derived from UNesT source term: MCgG--middle-cingulate-gyrus,cortical_structure,4
+BRN-MEDIAL-FRONTAL-CORTEX,MFC---medial-frontal-cortex,BRN-FRO,anatomical_structure,True,Canonical concept derived from UNesT source term: MFC---medial-frontal-cortex,cortical_structure,4
+BRN-MIDDLE-FRONTAL-GYRUS,MFG---middle-frontal-gyrus,BRN-FRO,anatomical_structure,True,Canonical concept derived from UNesT source term: MFG---middle-frontal-gyrus,cortical_structure,4
+BRN-MIDDLE-OCCIPITAL-GYRUS,MOG---middle-occipital-gyrus,BRN-OCC,anatomical_structure,True,Canonical concept derived from UNesT source term: MOG---middle-occipital-gyrus,cortical_structure,4
+BRN-MEDIAL-ORBITAL-GYRUS,MOrG--medial-orbital-gyrus,BRN-FRO,anatomical_structure,True,Canonical concept derived from UNesT source term: MOrG--medial-orbital-gyrus,cortical_structure,4
+BRN-POG,MPoG--postcentral-gyrus,BRN-PAR,cortical_structure,True,Canonical concept derived from UNesT source term: MPoG--postcentral-gyrus,cortical_structure,4
+BRN-PRG,MPrG--precentral-gyrus,BRN-FRO,cortical_structure,True,Canonical concept derived from UNesT source term: MPrG--precentral-gyrus,cortical_structure,4
+BRN-SUPERIOR-FRONTAL-GYRUS,MSFG--superior-frontal-gyrus,BRN-FRO,anatomical_structure,True,Canonical concept derived from UNesT source term: MSFG--superior-frontal-gyrus,cortical_structure,4
+BRN-MIDDLE-TEMPORAL-GYRUS,MTG---middle-temporal-gyrus,BRN-TEM,anatomical_structure,True,Canonical concept derived from UNesT source term: MTG---middle-temporal-gyrus,cortical_structure,4
+BRN-OCCIPITAL-POLE,OCP---occipital-pole,BRN-OCC,anatomical_structure,True,Canonical concept derived from UNesT source term: OCP---occipital-pole,cortical_structure,4
+BRN-OCCIPITAL-FUSIFORM-GYRUS,OFuG--occipital-fusiform-gyrus,BRN-OCC,anatomical_structure,True,Canonical concept derived from UNesT source term: OFuG--occipital-fusiform-gyrus,cortical_structure,4
+BRN-OPIFG-OPERCULAR-PART-OF-THE-IFG,OpIFG-opercular-part-of-the-IFG,BRN-CER-COR,anatomical_structure,True,Canonical concept derived from UNesT source term: OpIFG-opercular-part-of-the-IFG,other,1
+BRN-ORIFG-ORBITAL-PART-OF-THE-IFG,OrIFG-orbital-part-of-the-IFG,BRN-CER-COR,anatomical_structure,True,Canonical concept derived from UNesT source term: OrIFG-orbital-part-of-the-IFG,other,1
+BRN-POSTERIOR-CINGULATE-GYRUS,PCgG--posterior-cingulate-gyrus,BRN-LIM,anatomical_structure,True,Canonical concept derived from UNesT source term: PCgG--posterior-cingulate-gyrus,cortical_structure,4
+BRN-PCU,PCu---precuneus,BRN-PAR,cortical_structure,True,Canonical concept derived from UNesT source term: PCu---precuneus,cortical_structure,4
+BRN-PARAHIPPOCAMPAL-GYRUS,PHG---parahippocampal-gyrus,BRN-LIM,anatomical_structure,True,Canonical concept derived from UNesT source term: PHG---parahippocampal-gyrus,cortical_structure,4
+BRN-POSTERIOR-INSULA,PIns--posterior-insula,BRN-INS,anatomical_structure,True,Canonical concept derived from UNesT source term: PIns--posterior-insula,cortical_structure,4
+BRN-PARIETAL-OPERCULUM,PO----parietal-operculum,BRN-PAR,anatomical_structure,True,Canonical concept derived from UNesT source term: PO----parietal-operculum,cortical_structure,4
+BRN-POSTERIOR-ORBITAL-GYRUS,POrG--posterior-orbital-gyrus,BRN-FRO,anatomical_structure,True,Canonical concept derived from UNesT source term: POrG--posterior-orbital-gyrus,cortical_structure,4
+BRN-PLANUM-POLARE,PP----planum-polare,BRN-TEM,anatomical_structure,True,Canonical concept derived from UNesT source term: PP----planum-polare,cortical_structure,4
+BRN-PLANUM-TEMPORALE,PT----planum-temporale,BRN-TEM,anatomical_structure,True,Canonical concept derived from UNesT source term: PT----planum-temporale,cortical_structure,4
+BRN-SUBCALLOSAL-AREA,SCA---subcallosal-area,BRN-LIM,anatomical_structure,True,Canonical concept derived from UNesT source term: SCA---subcallosal-area,cortical_structure,4
+BRN-SUPPLEMENTARY-MOTOR-CORTEX,SMC---supplementary-motor-cortex,BRN-FRO,anatomical_structure,True,Canonical concept derived from UNesT source term: SMC---supplementary-motor-cortex,cortical_structure,4
+BRN-SUPRAMARGINAL-GYRUS,SMG---supramarginal-gyrus,BRN-PAR,anatomical_structure,True,Canonical concept derived from UNesT source term: SMG---supramarginal-gyrus,cortical_structure,4
+BRN-SUPERIOR-OCCIPITAL-GYRUS,SOG---superior-occipital-gyrus,BRN-OCC,anatomical_structure,True,Canonical concept derived from UNesT source term: SOG---superior-occipital-gyrus,cortical_structure,4
+BRN-SUPERIOR-PARIETAL-LOBULE,SPL---superior-parietal-lobule,BRN-CER-COR,anatomical_structure,True,Canonical concept derived from UNesT source term: SPL---superior-parietal-lobule,other,1
+BRN-SUPERIOR-TEMPORAL-GYRUS,STG---superior-temporal-gyrus,BRN-TEM,anatomical_structure,True,Canonical concept derived from UNesT source term: STG---superior-temporal-gyrus,cortical_structure,4
+BRN-TEMPORAL-POLE,TMP---temporal-pole,BRN-TEM,anatomical_structure,True,Canonical concept derived from UNesT source term: TMP---temporal-pole,cortical_structure,4
+BRN-TRIFG-TRIANGULAR-PART-OF-THE-IFG,TrIFG-triangular-part-of-the-IFG,BRN-CER-COR,anatomical_structure,True,Canonical concept derived from UNesT source term: TrIFG-triangular-part-of-the-IFG,other,1
+BRN-TRANSVERSE-TEMPORAL-GYRUS,TTG---transverse-temporal-gyrus,BRN-TEM,anatomical_structure,True,Canonical concept derived from UNesT source term: TTG---transverse-temporal-gyrus,cortical_structure,4
+BRN-POG-MED,"Postcentral Gyrus, Medial Segment",BRN-PAR,cortical_subregion,True,Medial segment of the postcentral gyrus.,cortical_structure,4
+BRN-PRG-MED,"Precentral Gyrus, Medial Segment",BRN-FRO,cortical_subregion,True,Medial segment of the precentral gyrus.,cortical_structure,4
+BRN-CER,Cerebrum,BRN,major_region,False,,,1
+BRN-CER-COR,Cerebral Cortex,BRN-CER,cortex,False,,,2
+BRN-FRO,Frontal Lobe,BRN-CER-COR,cortical_lobe,False,,,3
+BRN-PAR,Parietal Lobe,BRN-CER-COR,cortical_lobe,False,,,3
+BRN-TEM,Temporal Lobe,BRN-CER-COR,cortical_lobe,False,,,3
+BRN-OCC,Occipital Lobe,BRN-CER-COR,cortical_lobe,False,,,3
+BRN-LIM,Limbic Region,BRN-CER-COR,cortical_region,False,,,3
+BRN-INS,Insular Cortex,BRN-CER-COR,cortical_region,False,,,3
+BRN-DGM,Deep Gray Matter,BRN-CER,deep_gray_matter,False,,,2
+BRN-WM,Cerebral White Matter,BRN-CER,white_matter,False,,,2
+BRN-CBL,Cerebellum,BRN,major_region,False,,,1
+BRN-VEN,Ventricular System,BRN,major_region,False,,,1
+BRN-BST-GRP,Brainstem,BRN,major_region,False,,,1
